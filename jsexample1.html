@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Interactive Profile Card - Purvesh</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b0c10;
+            /* dark background */
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: #1f2833;
+            /* dark card */
+            padding: 24px 28px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+            width: 340px;
+            border: 1px solid #45a29e;
+            /* accent border */
+        }
+
+        .card h2 {
+            text-align: center;
+            margin-bottom: 18px;
+            color: #66fcf1;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-weight: bold;
+            display: inline-block;
+            width: 60px;
+            color: #c5c6c7;
+        }
+
+        span,
+        input,
+        textarea {
+            margin-left: 6px;
+            background: transparent;
+            color: #ffffff;
+        }
+
+        input,
+        textarea {
+            border: 1px solid #45a29e;
+            border-radius: 4px;
+            padding: 4px 6px;
+        }
+
+        textarea {
+            width: 190px;
+            height: 60px;
+            resize: vertical;
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 4px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid #45a29e;
+            background: #0b0c10;
+            color: #66fcf1;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        button:hover {
+            background: #45a29e;
+            color: #0b0c10;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>Profile Card</h2>
+
+        <div class="field">
+            <label>Name:</label>
+            <span id="name-text">Purvesh Sonwane</span>
+            <input id="name-input" type="text" class="hidden" />
+            <button id="name-btn">Edit</button>
+        </div>
+
+        <div class="field">
+            <label>Bio:</label>
+            <span id="bio-text">Web development student who loves coding and gaming.</span>
+            <textarea id="bio-input" class="hidden"></textarea>
+            <button id="bio-btn">Edit</button>
+        </div>
+
+        <div class="field">
+            <label>Age:</label>
+            <span id="age-text">20</span>
+            <input id="age-input" type="number" class="hidden" />
+            <button id="age-btn">Edit</button>
+        </div>
+    </div>
+
+    <script>
+        // Reusable function to set up Edit/Save toggle
+        function setupEditableField(textId, inputId, buttonId) {
+            const textEl = document.getElementById(textId);
+            const inputEl = document.getElementById(inputId);
+            const btnEl = document.getElementById(buttonId);
+
+            btnEl.addEventListener("click", function () {
+                if (btnEl.textContent === "Edit") {
+                    // Switch to edit mode
+                    inputEl.value = textEl.textContent;
+                    textEl.classList.add("hidden");
+                    inputEl.classList.remove("hidden");
+                    btnEl.textContent = "Save";
+                } else {
+                    // Save and switch back to display mode
+                    textEl.textContent = inputEl.value;
+                    inputEl.classList.add("hidden");
+                    textEl.classList.remove("hidden");
+                    btnEl.textContent = "Edit";
+                }
+            });
+        }
+
+        // Initialize fields
+        setupEditableField("name-text", "name-input", "name-btn");
+        setupEditableField("bio-text", "bio-input", "bio-btn");
+        setupEditableField("age-text", "age-input", "age-btn");
+    </script>
+</body>
+
+</html>

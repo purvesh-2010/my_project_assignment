@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Ghost Gadgets - Haunted Cart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        :root {
+            --bg-main: #02020a;
+            --bg-panel: #050509;
+            --bg-card: #080816;
+            --accent: #f97316;
+            --accent-soft: rgba(249, 115, 22, 0.35);
+            --accent-ghost: #38bdf8;
+            --danger: #ef4444;
+            --border: #1f2937;
+            --border-strong: #4b5563;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --shadow-strong: 0 22px 55px rgba(0, 0, 0, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 20% 0%, #111827 0, transparent 52%),
+                radial-gradient(circle at 90% 0%, #1f2937 0, transparent 55%),
+                radial-gradient(circle at 50% 120%, #020617 0, #02020a 60%);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* faint ghost face */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -40px;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(148, 163, 184, 0.09) 0, transparent 45%),
+                radial-gradient(circle at 70% 18%, rgba(148, 163, 184, 0.08) 0, transparent 40%),
+                radial-gradient(circle at 50% 40%, rgba(15, 23, 42, 0.7) 0, transparent 55%);
+            pointer-events: none;
+            z-index: -1;
+            mix-blend-mode: screen;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 1080px;
+            background: radial-gradient(circle at top, #020617 0, #02020a 55%);
+            border-radius: 22px;
+            box-shadow: var(--shadow-strong);
+            border: 1px solid rgba(15, 23, 42, 0.95);
+            padding: 20px 20px 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-shell::before {
+            content: "GHOST";
+            position: absolute;
+            top: -40px;
+            right: -10px;
+            font-size: 110px;
+            font-weight: 800;
+            letter-spacing: 0.38em;
+            color: rgba(15, 23, 42, 0.7);
+            transform: rotate(-18deg);
+            pointer-events: none;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 30% 20%, var(--accent-ghost) 0, transparent 50%),
+                radial-gradient(circle at 70% 40%, rgba(15, 23, 42, 1) 0, transparent 52%);
+            border: 2px solid rgba(148, 163, 184, 0.5);
+            box-shadow:
+                0 0 20px rgba(56, 189, 248, 0.5),
+                0 0 40px rgba(8, 47, 73, 0.7);
+            position: relative;
+        }
+
+        .brand-mark::before,
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            top: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 14px rgba(15, 23, 42, 0.9);
+        }
+
+        .brand-mark::before {
+            left: 10px;
+        }
+
+        .brand-mark::after {
+            right: 10px;
+        }
+
+        .brand-text h1 {
+            font-size: 20px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+        }
+
+        .brand-text span {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .cart-tagline {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cart-tagline-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: var(--accent);
+            box-shadow: 0 0 14px var(--accent-soft);
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 3fr 2.1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            .app-shell {
+                padding: 16px 14px 18px;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .panel {
+            background: radial-gradient(circle at top, #020617 0, #02020a 60%);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            padding: 12px 12px 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            inset: -80px;
+            background:
+                radial-gradient(circle at 5% 0%, rgba(56, 189, 248, 0.07) 0, transparent 55%),
+                radial-gradient(circle at 100% 10%, rgba(248, 250, 252, 0.03) 0, transparent 60%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .panel-header h2 {
+            font-size: 14px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-main);
+        }
+
+        .panel-header span {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+        }
+
+        /* PRODUCTS LIST */
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .product-card {
+            background: linear-gradient(145deg, #020617, #020518);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.6);
+        }
+
+        .product-card::before {
+            content: "";
+            position: absolute;
+            inset: -40px;
+            background:
+                radial-gradient(circle at 80% 0%, rgba(249, 115, 22, 0.12) 0, transparent 55%);
+            opacity: 0;
+            transition: opacity 0.18s ease;
+            pointer-events: none;
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .product-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--accent-ghost);
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .product-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .product-price {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .product-price span {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
+        .product-stock {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .product-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+            gap: 6px;
+        }
+
+        .qty-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 999px;
+            border: 1px solid var(--border-strong);
+            padding: 3px 6px;
+            background: #020617;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .qty-control button {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .qty-control button:hover {
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .qty-number {
+            min-width: 18px;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .btn-add {
+            flex: 1;
+            border-radius: 999px;
+            border: none;
+            padding: 6px 10px;
+            background: linear-gradient(135deg, var(--accent), #facc15);
+            color: #0b1120;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            box-shadow: 0 10px 24px rgba(249, 115, 22, 0.5);
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+            white-space: nowrap;
+        }
+
+        .btn-add span.icon {
+            font-size: 13px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-add:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        /* CART PANEL */
+
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 8px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: auto 50px;
+            gap: 6px;
+            padding: 8px 8px 8px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #020617;
+            position: relative;
+        }
+
+        .cart-item-main {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .cart-item-name {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .cart-item-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .cart-item-meta span {
+            margin-right: 6px;
+        }
+
+        .cart-item-qty {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .cart-item-qty button {
+            width: 16px;
+            height: 16px;
+            border-radius: 999px;
+            border: none;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #020617;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .cart-item-qty button:hover {
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .cart-item-price {
+            text-align: right;
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .cart-item-remove {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            border: none;
+            background: transparent;
+            color: var(--danger);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .cart-empty {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 26px 10px 18px;
+        }
+
+        .cart-summary {
+            border-top: 1px dashed var(--border-strong);
+            padding-top: 8px;
+            margin-top: 4px;
+            font-size: 12px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            color: var(--text-muted);
+        }
+
+        .summary-row.total {
+            margin-top: 4px;
+            padding-top: 4px;
+            border-top: 1px solid var(--border);
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .summary-row.total span.amount {
+            color: var(--accent);
+        }
+
+        .summary-note {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+
+        .btn-checkout {
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 999px;
+            border: none;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #f97316, #b91c1c);
+            color: #020617;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            box-shadow: 0 14px 34px rgba(248, 113, 113, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-checkout:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .ghost-total {
+            font-size: 11px;
+            margin-top: 4px;
+            color: var(--text-muted);
+        }
+
+        .ghost-total span {
+            color: var(--accent-ghost);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <header>
+            <div class="brand">
+                <div class="brand-mark"></div>
+                <div class="brand-text">
+                    <h1>Ghost Gadgets</h1>
+                    <span>Summon your cursed tech</span>
+                </div>
+            </div>
+            <div class="cart-tagline">
+                <span class="cart-tagline-dot"></span>
+                Midnight cart • No refunds from the afterlife
+            </div>
+        </header>
+
+        <main>
+            <!-- PRODUCTS -->
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Artifacts</h2>
+                    <span>Choose your horrors</span>
+                </div>
+
+                <div class="products" id="products"></div>
+            </section>
+
+            <!-- CART -->
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Haunted cart</h2>
+                    <span>Bound to your soul</span>
+                </div>
+
+                <div id="cart-items" class="cart-items"></div>
+
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Items</span>
+                        <span id="summary-items">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Sub‑total</span>
+                        <span id="summary-subtotal">₹0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Spirit tax (5%)</span>
+                        <span id="summary-tax">₹0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total due</span>
+                        <span class="amount" id="summary-total">₹0</span>
+                    </div>
+                    <p class="summary-note">Once checked‑out, no mortal returns.</p>
+                </div>
+
+                <button class="btn-checkout" id="checkout-btn">
+                    Complete ritual
+                    <span>☠</span>
+                </button>
+
+                <p class="ghost-total">
+                    Ghost points earned: <span id="ghost-points">0</span>
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const productsData = [
+            {
+                id: 1,
+                name: "Spectral Headphones",
+                tag: "Cursed audio",
+                desc: "Hear whispers from the void between tracks.",
+                price: 1999,
+                stock: "13 in stock"
+            },
+            {
+                id: 2,
+                name: "Phantom Phone Case",
+                tag: "Haunted shell",
+                desc: "Glows softly whenever something watches you.",
+                price: 899,
+                stock: "9 in stock"
+            },
+            {
+                id: 3,
+                name: "Ouija Keyboard",
+                tag: "Ghost input",
+                desc: "Keys occasionally press themselves at 3:00 AM.",
+                price: 2499,
+                stock: "6 in stock"
+            },
+            {
+                id: 4,
+                name: "Shadow Power Bank",
+                tag: "Endless night",
+                desc: "Never runs out, but it drains the room temperature.",
+                price: 1499,
+                stock: "13 in stock"
+            },
+            {
+                id: 5,
+                name: "Poltergeist Mouse",
+                tag: "Restless cursor",
+                desc: "Cursor twitches on haunted websites.",
+                price: 1299,
+                stock: "7 in stock"
+            },
+            {
+                id: 6,
+                name: "Grimoire Smartwatch",
+                tag: "Forbidden time",
+                desc: "Vibrates whenever reality slightly shifts.",
+                price: 2999,
+                stock: "3 in stock"
+            }
+        ]; // items inspired by typical JS cart demos. [web:61][web:71]
+
+        const productsContainer = document.getElementById("products");
+        const cartItemsContainer = document.getElementById("cart-items");
+        const summaryItems = document.getElementById("summary-items");
+        const summarySubtotal = document.getElementById("summary-subtotal");
+        const summaryTax = document.getElementById("summary-tax");
+        const summaryTotal = document.getElementById("summary-total");
+        const ghostPointsEl = document.getElementById("ghost-points");
+        const checkoutBtn = document.getElementById("checkout-btn");
+
+        const cart = {};
+
+        function formatCurrency(amount) {
+            return "₹" + amount.toLocaleString("en-IN");
+        }
+
+        function renderProducts() {
+            productsContainer.innerHTML = "";
+            productsData.forEach((p) => {
+                const card = document.createElement("article");
+                card.className = "product-card";
+                card.innerHTML = `
+          <div class="product-tag">${p.tag}</div>
+          <h3 class="product-name">${p.name}</h3>
+          <p class="product-desc">${p.desc}</p>
+          <div class="product-meta">
+            <div class="product-price">${formatCurrency(p.price)}<span>per item</span></div>
+            <div class="product-stock">${p.stock}</div>
+          </div>
+          <div class="product-actions">
+            <div class="qty-control" data-id="${p.id}">
+              <button class="minus">−</button>
+              <span class="qty-number">1</span>
+              <button class="plus">+</button>
+            </div>
+            <button class="btn-add" data-id="${p.id}">
+              <span class="icon">🛒</span>
+              Add to cart
+            </button>
+          </div>
+        `;
+                productsContainer.appendChild(card);
+            });
+        }
+
+        function getCartArray() {
+            return Object.values(cart);
+        }
+
+        function updateSummary() {
+            const items = getCartArray();
+            let itemCount = 0;
+            let subtotal = 0;
+            items.forEach((item) => {
+                itemCount += item.qty;
+                subtotal += item.qty * item.price;
+            });
+            const tax = Math.round(subtotal * 0.05);
+            const total = subtotal + tax;
+            const ghostPoints = Math.floor(total / 100);
+
+            summaryItems.textContent = itemCount;
+            summarySubtotal.textContent = formatCurrency(subtotal);
+            summaryTax.textContent = formatCurrency(tax);
+            summaryTotal.textContent = formatCurrency(total);
+            ghostPointsEl.textContent = ghostPoints;
+        } // pattern similar to typical cart total updates. [web:67][web:70]
+
+        function renderCart() {
+            const items = getCartArray();
+            if (items.length === 0) {
+                cartItemsContainer.innerHTML =
+                    '<p class="cart-empty">Your cart is empty. The ghosts are waiting for an offering.</p>';
+                updateSummary();
+                return;
+            }
+
+            cartItemsContainer.innerHTML = "";
+            items.forEach((item) => {
+                const row = document.createElement("div");
+                row.className = "cart-item";
+                const lineTotal = item.qty * item.price;
+                row.innerHTML = `
+          <button class="cart-item-remove" data-id="${item.id}">×</button>
+          <div class="cart-item-main">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-meta">
+              <span>${formatCurrency(item.price)} each</span>
+              <span>${item.tag}</span>
+            </div>
+            <div class="cart-item-qty">
+              <button class="decrease" data-id="${item.id}">−</button>
+              <span>${item.qty}</span>
+              <button class="increase" data-id="${item.id}">+</button>
+            </div>
+          </div>
+          <div class="cart-item-price">
+            ${formatCurrency(lineTotal)}
+          </div>
+        `;
+                cartItemsContainer.appendChild(row);
+            });
+
+            updateSummary();
+        }
+
+        function addToCart(productId, qty) {
+            const product = productsData.find((p) => p.id === productId);
+            if (!product) return;
+            if (!cart[productId]) {
+                cart[productId] = { ...product, qty };
+            } else {
+                cart[productId].qty += qty;
+            }
+            renderCart();
+        }
+
+        function changeCartQty(productId, delta) {
+            const item = cart[productId];
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                delete cart[productId];
+            }
+            renderCart();
+        }
+
+        function removeFromCart(productId) {
+            delete cart[productId];
+            renderCart();
+        }
+
+        // EVENTS
+        productsContainer.addEventListener("click", (e) => {
+            const plusBtn = e.target.closest(".plus");
+            const minusBtn = e.target.closest(".minus");
+            const addBtn = e.target.closest(".btn-add");
+
+            if (plusBtn || minusBtn) {
+                const control = e.target.closest(".qty-control");
+                const qtySpan = control.querySelector(".qty-number");
+                let qty = parseInt(qtySpan.textContent, 10);
+                if (plusBtn) qty++;
+                if (minusBtn && qty > 1) qty--;
+                qtySpan.textContent = qty;
+            }
+
+            if (addBtn) {
+                const id = parseInt(addBtn.dataset.id, 10);
+                const control = addBtn.parentElement.querySelector(".qty-control");
+                const qty = parseInt(control.querySelector(".qty-number").textContent, 10);
+                addToCart(id, qty);
+            }
+        });
+
+        cartItemsContainer.addEventListener("click", (e) => {
+            const incBtn = e.target.closest(".increase");
+            const decBtn = e.target.closest(".decrease");
+            const removeBtn = e.target.closest(".cart-item-remove");
+
+            if (incBtn) {
+                const id = parseInt(incBtn.dataset.id, 10);
+                changeCartQty(id, 1);
+            }
+            if (decBtn) {
+                const id = parseInt(decBtn.dataset.id, 10);
+                changeCartQty(id, -1);
+            }
+            if (removeBtn) {
+                const id = parseInt(removeBtn.dataset.id, 10);
+                removeFromCart(id);
+            }
+        });
+
+        checkoutBtn.addEventListener("click", () => {
+            const items = getCartArray();
+            if (!items.length) {
+                alert("Your cart is empty. Even ghosts need something to haunt.");
+                return;
+            }
+            alert("The ritual is complete. Your Ghost Gadgets are on their way...");
+        });
+
+        renderProducts();
+        renderCart();
+    </script>
+</body>
+
+</html>

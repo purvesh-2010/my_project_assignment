@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validator - Assignment 5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input.valid {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        input.invalid {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            min-height: 20px;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .success {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            min-height: 20px;
+        }
+
+        .success.show {
+            display: block;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Registration Form</h2>
+
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+                <div class="error" id="usernameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error" id="passwordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <div class="error" id="confirmPasswordError"></div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>Register</button>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            ✅ Registration successful! Welcome aboard!
+        </div>
+    </div>
+
+    <script>
+        // Validation patterns
+        const patterns = {
+            username: /^[a-zA-Z0-9_]{3,20}$/,
+            email: /^[^s@]+@[^s@]+.[^s@]+$/
+        };
+
+        // Get DOM elements
+        const form = document.getElementById('registrationForm');
+        const inputs = {
+            username: document.getElementById('username'),
+            email: document.getElementById('email'),
+            password: document.getElementById('password'),
+            confirmPassword: document.getElementById('confirmPassword')
+        };
+
+        const errors = {
+            username: document.getElementById('usernameError'),
+            email: document.getElementById('emailError'),
+            password: document.getElementById('passwordError'),
+            confirmPassword: document.getElementById('confirmPasswordError')
+        };
+
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+
+        let isValidForm = false;
+
+        // Validation functions
+        function validateUsername(value) {
+            if (value.length < 3) return 'Username must be at least 3 characters';
+            if (!patterns.username.test(value)) return 'Only letters, numbers, and underscores allowed';
+            return '';
+        }
+
+        function validateEmail(value) {
+            if (!patterns.email.test(value)) return 'Please enter a valid email address';
+            return '';
+        }
+
+        function validatePassword(value) {
+            if (value.length < 6) return 'Password must be at least 6 characters';
+            return '';
+        }
+
+        function validateConfirmPassword(value, passwordValue) {
+            if (value !== passwordValue) return 'Passwords do not match';
+            return '';
+        }
+
+        // Validate single field
+        function validateField(fieldName, value, extraValue = '') {
+            let errorMsg = '';
+
+            switch (fieldName) {
+                case 'username':
+                    errorMsg = validateUsername(value);
+                    break;
+                case 'email':
+                    errorMsg = validateEmail(value);
+                    break;
+                case 'password':
+                    errorMsg = validatePassword(value);
+                    break;
+                case 'confirmPassword':
+                    errorMsg = validateConfirmPassword(value, extraValue);
+                    break;
+            }
+
+            // Show/hide error and update styling
+            const errorEl = errors[fieldName];
+            const inputEl = inputs[fieldName];
+
+            if (errorMsg) {
+                errorEl.textContent = errorMsg;
+                errorEl.classList.add('show');
+                inputEl.classList.remove('valid');
+                inputEl.classList.add('invalid');
+            } else {
+                errorEl.classList.remove('show');
+                inputEl.classList.remove('invalid');
+                inputEl.classList.add('valid');
+            }
+
+            return !errorMsg;
+        }
+
+        // Check if all fields are valid
+        function checkFormValidity() {
+            const usernameValid = validateField('username', inputs.username.value);
+            const emailValid = validateField('email', inputs.email.value);
+            const passwordValid = validateField('password', inputs.password.value);
+            const confirmValid = validateField('confirmPassword', inputs.confirmPassword.value, inputs.password.value);
+
+            isValidForm = usernameValid && emailValid && passwordValid && confirmValid;
+            submitBtn.disabled = !isValidForm;
+        }
+
+        // Add blur event listeners
+        Object.keys(inputs).forEach(fieldName => {
+            inputs[fieldName].addEventListener('blur', function () {
+                if (fieldName === 'confirmPassword') {
+                    validateField(fieldName, this.value, inputs.password.value);
+                } else {
+                    validateField(fieldName, this.value);
+                }
+                checkFormValidity();
+            });
+        });
+
+        // Form submission
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            if (isValidForm) {
+                form.style.display = 'none';
+                successMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>
