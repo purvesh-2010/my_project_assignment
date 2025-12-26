@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Wizard Pro v4.0 </title>
+    <style>
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --neon-orange: #ff6b35;
+            --neon-green: #00ff88;
+            --neon-red: #ff4757;
+            --text-glow: #ffffff;
+            --shadow-neon: 0 0 30px rgba(255, 107, 53, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .header-actions {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            gap: 10px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--neon-red), #ff6b6b);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.6);
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-neon);
+            overflow: hidden;
+            animation: float 6s ease-in-out infinite;
+            margin-top: 80px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .progress-container {
+            display: flex;
+            padding: 25px;
+            background: linear-gradient(90deg, rgba(255, 107, 53, 0.2), rgba(0, 255, 136, 0.2));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-step {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 8px;
+            border-radius: 3px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-step::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
+
+        .progress-step.active {
+            background: var(--neon-orange);
+            box-shadow: var(--shadow-neon);
+        }
+
+        .progress-step.active::before {
+            background: var(--neon-orange);
+            box-shadow: var(--shadow-neon);
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .progress-step.finish {
+            background: var(--neon-green);
+        }
+
+        .progress-step.finish::before {
+            background: var(--neon-green);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .form-step {
+            display: none;
+            padding: 50px 40px;
+            min-height: 400px;
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--neon-orange), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-glow);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 18px 20px;
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--neon-orange);
+            box-shadow: var(--shadow-neon);
+            transform: translateY(-2px);
+        }
+
+        input.invalid {
+            border-color: var(--neon-red);
+            background: rgba(255, 71, 87, 0.1);
+            animation: shake 0.5s ease;
+        }
+
+        .error-msg {
+            color: var(--neon-red);
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .error-msg.show {
+            display: block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px);
+            }
+
+            75% {
+                transform: translateX(4px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .password-strength {
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+            padding: 0 40px 40px;
+            position: sticky;
+            bottom: 0;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+        }
+
+        .btn {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-prev {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--neon-orange), var(--neon-green));
+            color: white;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-next:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-next:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.5;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: var(--glass);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .summary-table th {
+            background: linear-gradient(135deg, var(--neon-orange), var(--neon-green));
+            padding: 20px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .summary-table td {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .summary-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .success-msg {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.1));
+            border-radius: 20px;
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.3);
+        }
+
+        .saved-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--neon-green);
+            color: black;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            transform: translateX(300px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .saved-indicator.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .clear-indicator {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: var(--neon-red);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            transform: translateX(300px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .clear-indicator.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                margin-top: 100px;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                padding: 0 20px 30px;
+            }
+
+            .form-step {
+                padding: 40px 25px;
+            }
+
+            .header-actions {
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ✅ REFRESH BUTTON -->
+    <div class="header-actions">
+        <button class="refresh-btn" id="refreshBtn" title="Clear all data & restart">
+            🔄 Refresh Form
+        </button>
+    </div>
+
+    <div class="clear-indicator" id="clearIndicator">🗑️ All data cleared!</div>
+    <div class="saved-indicator" id="savedIndicator">💾 Saved to LocalStorage</div>
+
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-step active"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
+
+        <form id="wizardForm">
+            <div class="form-step active" data-step="1">
+                <h2>👤 Personal Info</h2>
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+                    <div class="error-msg" id="fullNameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+91 98765 43210" required>
+                    <div class="error-msg" id="phoneError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age Group *</label>
+                    <select id="age" name="age" required>
+                        <option value="">Select your age group</option>
+                        <option value="18-25">18-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="36-50">36-50</option>
+                        <option value="50+">50+</option>
+                    </select>
+                    <div class="error-msg" id="ageError"></div>
+                </div>
+            </div>
+
+            <div class="form-step" data-step="2">
+                <h2>📧 Contact Details</h2>
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                    <div class="error-msg" id="emailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="address">Full Address</label>
+                    <input type="text" id="address" name="address" placeholder="Street, City, PIN">
+                </div>
+            </div>
+
+            <div class="form-step" data-step="3">
+                <h2>🔐 Account Setup</h2>
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" placeholder="your_username" required>
+                    <div class="error-msg" id="usernameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password *
+                        <span style="font-size: 0.8em; opacity: 0.7;">(Min 6 chars)</span>
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Enter any password (6+ chars)"
+                        required>
+                    <div class="error-msg" id="passwordError"></div>
+                    <div class="password-strength" id="passwordStrength"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repeat password"
+                        required>
+                    <div class="error-msg" id="confirmPasswordError"></div>
+                </div>
+            </div>
+
+            <div class="form-step" data-step="4">
+                <h2>✅ Review & Submit</h2>
+                <p style="margin-bottom: 30px; opacity: 0.9;">Please review all your information:</p>
+                <table class="summary-table" id="summaryTable"></table>
+                <div class="success-msg" id="successMsg" style="display: none;">
+                    <h3 style="font-size: 2.5em; margin-bottom: 20px;">🎉 Success!</h3>
+                    <p style="font-size: 1.3em;">Your registration is complete!</p>
+                    <p id="jsonPreview" style="margin-top: 20px; font-size: 0.9em; opacity: 0.8;"></p>
+                </div>
+            </div>
+        </form>
+
+        <div class="nav-buttons">
+            <button type="button" class="btn btn-prev" id="prevBtn">← Previous</button>
+            <button type="button" class="btn btn-next" id="nextBtn">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 0;
+        let formData = JSON.parse(localStorage.getItem('formWizardData')) || {};
+        let keysDown = {};
+
+        const validationRules = {
+            fullName: { pattern: /^[a-zA-Z\s]{2,50}$/, msg: 'Name: 2-50 letters only' },
+            phone: { pattern: /^[\d\s\-\(\)\+]{10,15}$/, msg: 'Phone: 10-15 digits' },
+            email: { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, msg: 'Invalid email format' },
+            username: { pattern: /^[a-zA-Z0-9_]{3,20}$/, msg: 'Username: 3-20 chars (a-z,0-9,_)' },
+            age: { required: true, msg: 'Please select age group' },
+            password: { minLength: 6, msg: 'Password: Minimum 6 characters' }
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadFormData();
+            showTab(currentTab);
+            attachAllEventListeners();
+        });
+
+        // ✅ REFRESH BUTTON FUNCTION
+        function attachAllEventListeners() {
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', resetForm);
+
+            // Field validation
+            ['fullName', 'phone', 'email', 'username', 'password', 'confirmPassword', 'age'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', () => {
+                        validateField(id);
+                        updateNextButton();
+                    });
+                    el.addEventListener('blur', () => {
+                        validateField(id);
+                        updateNextButton();
+                    });
+                }
+            });
+
+            // Navigation buttons
+            document.getElementById('prevBtn').addEventListener('click', () => nextPrev(-1));
+            document.getElementById('nextBtn').addEventListener('click', () => nextPrev(1));
+
+            // ENTER KEY
+            document.addEventListener('keydown', (e) => {
+                keysDown[e.key] = true;
+                if (e.key === 'Enter' && !keysDown['Shift']) {
+                    e.preventDefault();
+                    const activeStep = document.querySelector('.form-step.active');
+                    const hasErrors = activeStep.querySelector('.error-msg.show');
+                    if (!hasErrors && currentTab < 3) nextPrev(1);
+                    else if (currentTab === 3) submitForm();
+                }
+            });
+
+            document.addEventListener('keyup', (e) => {
+                keysDown[e.key] = false;
+            });
+
+            document.addEventListener('input', saveFormDataDebounced);
+        }
+
+        // ✅ PERFECT RESET FUNCTION
+        function resetForm() {
+            if (confirm('🗑️ Clear all form data and restart? This cannot be undone.')) {
+                // Clear localStorage
+                localStorage.removeItem('formWizardData');
+
+                // Reset form data
+                formData = {};
+
+                // Clear all inputs
+                document.querySelectorAll('input, select').forEach(el => {
+                    el.value = '';
+                    el.classList.remove('invalid');
+                });
+
+                // Hide all errors
+                document.querySelectorAll('.error-msg').forEach(el => {
+                    el.classList.remove('show');
+                });
+
+                // Reset UI
+                currentTab = 0;
+                document.querySelectorAll('.form-step').forEach((step, idx) => {
+                    step.classList.remove('active');
+                    if (idx === 0) step.classList.add('active');
+                });
+
+                // Reset progress
+                updateProgress();
+                updateButtons();
+                updateNextButton();
+
+                // Show clear confirmation
+                showClearIndicator();
+
+                console.log('✅ Form completely reset!');
+            }
+        }
+
+        function showClearIndicator() {
+            const indicator = document.getElementById('clearIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 2500);
+        }
+
+        function saveFormDataDebounced() {
+            clearTimeout(window.saveTimeout);
+            window.saveTimeout = setTimeout(() => {
+                saveFormData();
+                showSavedIndicator();
+            }, 300);
+        }
+
+        function showSavedIndicator() {
+            const indicator = document.getElementById('savedIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 2000);
+        }
+
+        function validateField(fieldName) {
+            const input = document.getElementById(fieldName);
+            const errorEl = document.getElementById(fieldName + 'Error');
+            const value = input.value.trim();
+
+            input.classList.remove('invalid');
+            if (errorEl) errorEl.classList.remove('show');
+
+            if (input.hasAttribute('required') && !value) {
+                if (errorEl) showError(input, errorEl, 'This field is required');
+                return false;
+            }
+
+            const rule = validationRules[fieldName];
+            if (rule && rule.pattern && !rule.pattern.test(value)) {
+                if (errorEl) showError(input, errorEl, rule.msg);
+                return false;
+            }
+
+            if (fieldName === 'password' && value.length < 6) {
+                if (errorEl) showError(input, errorEl, 'Password: Minimum 6 characters');
+                return false;
+            }
+
+            if (fieldName === 'confirmPassword' && value !== document.getElementById('password').value) {
+                if (errorEl) showError(input, errorEl, 'Passwords do not match');
+                return false;
+            }
+
+            if (fieldName === 'password') updatePasswordStrength(value);
+            return true;
+        }
+
+        function showError(input, errorEl, msg) {
+            input.classList.add('invalid');
+            errorEl.textContent = msg;
+            errorEl.classList.add('show');
+        }
+
+        function updatePasswordStrength(password) {
+            const bar = document.getElementById('passwordStrength');
+            let score = password.length >= 6 ? 1 : 0;
+            const colors = ['rgba(255,71,87,0.3)', 'var(--neon-green)'];
+            bar.style.width = `${Math.min((password.length / 12) * 100, 100)}%`;
+            bar.style.background = colors[score];
+        }
+
+        function updateNextButton() {
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentTab === 3) return;
+            const isValid = validateCurrentStep();
+            nextBtn.disabled = !isValid;
+        }
+
+        function showTab(n) {
+            const steps = document.querySelectorAll('.form-step');
+            steps[currentTab].classList.remove('active');
+
+            currentTab = Math.max(0, Math.min(n, steps.length - 1));
+            steps[currentTab].classList.add('active');
+
+            updateProgress();
+            updateButtons();
+            updateNextButton();
+            saveFormData();
+        }
+
+        function nextPrev(n) {
+            if (n === 1 && currentTab < 3 && !validateCurrentStep()) {
+                updateNextButton();
+                return;
+            }
+            showTab(currentTab + n);
+        }
+
+        function validateCurrentStep() {
+            const step = document.querySelector(`.form-step[data-step="${currentTab + 1}"]`);
+            const requiredFields = step.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!validateField(field.id)) isValid = false;
+            });
+
+            return isValid;
+        }
+
+        function updateProgress() {
+            document.querySelectorAll('.progress-step').forEach((step, idx) => {
+                step.className = 'progress-step';
+                if (idx < currentTab) step.classList.add('finish');
+                if (idx === currentTab) step.classList.add('active');
+            });
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.style.display = currentTab === 0 ? 'none' : 'flex';
+
+            if (currentTab === 3) {
+                nextBtn.textContent = '🚀 Submit Form';
+                nextBtn.style.background = 'linear-gradient(135deg, var(--neon-green), #00ff88)';
+                nextBtn.disabled = false;
+            } else {
+                nextBtn.textContent = 'Next →';
+                nextBtn.style.background = 'linear-gradient(135deg, var(--neon-orange), var(--neon-green))';
+            }
+        }
+
+        function generateSummary() {
+            const table = document.getElementById('summaryTable');
+            table.innerHTML = `
+                <thead>
+                    <tr><th>Field</th><th>Value</th></tr>
+                </thead>
+                <tbody>
+                    ${Object.entries(formData).map(([key, value]) => {
+                const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                return `<tr><td>${label}</td><td>${value || '—'}</td></tr>`;
+            }).join('')}
+                </tbody>
+            `;
+        }
+
+        function submitForm() {
+            generateSummary();
+            document.getElementById('successMsg').style.display = 'block';
+            document.querySelector('.nav-buttons').style.display = 'none';
+
+            document.getElementById('jsonPreview').innerHTML =
+                `<strong>JSON Preview:</strong><pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 12px;">${JSON.stringify(formData, null, 2)}</pre>`;
+
+            localStorage.removeItem('formWizardData');
+        }
+
+        function saveFormData() {
+            document.querySelectorAll('input, select').forEach(el => {
+                if (el.value.trim()) formData[el.name] = el.value.trim();
+                else delete formData[el.name];
+            });
+            localStorage.setItem('formWizardData', JSON.stringify(formData));
+        }
+
+        function loadFormData() {
+            Object.entries(formData).forEach(([key, value]) => {
+                const el = document.querySelector(`[name="${key}"]`);
+                if (el) el.value = value;
+            });
+        }
+    </script>
+</body>
+
+</html>

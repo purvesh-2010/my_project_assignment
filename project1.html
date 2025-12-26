@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Carousel - Project 1</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .carousel {
+            position: relative;
+            max-width: 1000px;
+            margin: auto;
+            background: linear-gradient(145deg, #1a1a2e, #0f0f23);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .carousel-title {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+            position: relative;
+        }
+
+        .carousel-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            border-radius: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .carousel-inner {
+            position: relative;
+            height: 450px;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translateX(100%);
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        .slide.active {
+            transform: translateX(0);
+            filter: brightness(1.05) contrast(1.15);
+        }
+
+        .slide.prev {
+            transform: translateX(-100%);
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .caption {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.85), rgba(20, 20, 46, 0.95));
+            color: #fff;
+            padding: 25px 30px;
+            border-radius: 16px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .caption small {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 400;
+            display: block;
+            margin-top: 8px;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.8), rgba(30, 30, 60, 0.9));
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: bold;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .carousel-nav:hover {
+            background: linear-gradient(145deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 1));
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-50%) scale(1.15) rotate(5deg);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .prev {
+            left: 25px;
+        }
+
+        .next {
+            right: 25px;
+        }
+
+        .dots {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin: 0 8px;
+            background: linear-gradient(145deg, #404040, #2a2a2a);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dot::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: linear-gradient(45deg, #667eea, #f093fb);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+        }
+
+        .dot.active::before,
+        .dot:hover::before {
+            width: 8px;
+            height: 8px;
+        }
+
+        .dot.active,
+        .dot:hover {
+            background: linear-gradient(145deg, rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6));
+            border-color: rgba(102, 126, 234, 0.8);
+            transform: scale(1.3);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .carousel-inner {
+                height: 320px;
+            }
+
+            .caption {
+                bottom: 25px;
+                left: 25px;
+                right: 25px;
+                font-size: 1.1rem;
+                padding: 20px 25px;
+            }
+
+            .carousel-nav {
+                width: 52px;
+                height: 52px;
+                font-size: 20px;
+            }
+
+            .prev {
+                left: 20px;
+            }
+
+            .next {
+                right: 20px;
+            }
+
+            .carousel-title {
+                font-size: 1.6rem;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .carousel-inner {
+                height: 260px;
+            }
+
+            body {
+                padding: 15px;
+            }
+
+            .caption {
+                font-size: 1rem;
+                padding: 16px 20px;
+            }
+
+            .carousel-nav {
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+        }
+
+        /* Glow effect on carousel */
+        .carousel::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #667eea);
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            animation: glowRotate 4s linear infinite;
+        }
+
+        .carousel:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes glowRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div id="carousel" class="carousel" role="region" aria-labelledby="carousel-title">
+            <h2 id="carousel-title" class="carousel-title">Gaming Gear Showcase</h2>
+            <h2 id="carousel-title-sr" class="sr-only">Gaming products carousel</h2>
+
+            <div class="carousel-inner">
+                <div class="slide" data-slide="0">
+                    <!-- Photo 1: RGB Gaming Keyboard -->
+                    <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=450&fit=crop"
+                        alt="RGB Gaming Keyboard with rainbow backlighting and mechanical switches" loading="lazy">
+                    <div class="caption">Mechanical RGB Keyboard<br><small>Ultra-responsive switches, 100M
+                            keystrokes</small></div>
+                </div>
+                <div class="slide" data-slide="1">
+                    <!-- Photo 2: Gaming Mouse -->
+                    <img src="https://images.unsplash.com/photo-1610945262588-185be3a40367?w=1200&h=450&fit=crop"
+                        alt="Black ergonomic gaming mouse with RGB lighting and multiple side buttons" loading="lazy">
+                    <div class="caption">Precision Gaming Mouse<br><small>19K DPI sensor, zero latency</small></div>
+                </div>
+                <div class="slide" data-slide="2">
+                    <!-- Photo 3: Gaming Headset -->
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=450&fit=crop"
+                        alt="Wireless gaming headset with RGB lights, microphone and plush ear cushions" loading="lazy">
+                    <div class="caption">Surround Sound Headset<br><small>7.1 virtual audio, noise-canceling mic</small>
+                    </div>
+                </div>
+                <div class="slide" data-slide="3">
+                    <!-- Photo 4: Gaming Monitor -->
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&h=450&fit=crop"
+                        alt="Curved ultrawide gaming monitor displaying racing game with 240Hz refresh rate"
+                        loading="lazy">
+                    <div class="caption">240Hz Gaming Monitor<br><small>1ms response, G-Sync compatible</small></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        class ImageCarousel {
+            constructor(selector) {
+                this.carousel = document.querySelector(selector);
+                this.slides = this.carousel.querySelectorAll('.slide');
+                this.currentIndex = 0;
+                this.intervalId = null;
+                this.autoplayDelay = 4000;
+                this.isTransitioning = false;
+                this.touchStartX = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.createControls();
+                this.updateSlides();
+                this.startAutoplay();
+                this.bindEvents();
+            }
+
+            createControls() {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'carousel-nav prev';
+                prevBtn.innerHTML = '&#8249;';
+                prevBtn.setAttribute('aria-label', 'Previous slide');
+                prevBtn.onclick = () => this.prev();
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'carousel-nav next';
+                nextBtn.innerHTML = '&#8250;';
+                nextBtn.setAttribute('aria-label', 'Next slide');
+                nextBtn.onclick = () => this.next();
+
+                this.carousel.append(prevBtn, nextBtn);
+
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'dots';
+                this.dots = [];
+
+                this.slides.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'dot';
+                    dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                    dot.onclick = () => this.goTo(index);
+                    dotsContainer.appendChild(dot);
+                    this.dots.push(dot);
+                });
+
+                this.carousel.appendChild(dotsContainer);
+            }
+
+            updateSlides() {
+                this.slides.forEach((slide, index) => {
+                    slide.classList.remove('active', 'prev', 'next');
+
+                    if (index === this.currentIndex) {
+                        slide.classList.add('active');
+                    } else if (index === (this.currentIndex - 1 + this.slides.length) % this.slides.length) {
+                        slide.classList.add('prev');
+                    } else if (index === (this.currentIndex + 1) % this.slides.length) {
+                        slide.classList.add('next');
+                    }
+                });
+
+                this.updateDots();
+            }
+
+            updateDots() {
+                this.dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentIndex);
+                });
+            }
+
+            next() {
+                this.navigate(1);
+            }
+
+            prev() {
+                this.navigate(-1);
+            }
+
+            goTo(index) {
+                this.navigate(index - this.currentIndex);
+            }
+
+            navigate(direction) {
+                if (this.isTransitioning) return;
+
+                this.isTransitioning = true;
+                const totalSlides = this.slides.length;
+                this.currentIndex = (this.currentIndex + direction + totalSlides) % totalSlides;
+
+                this.updateSlides();
+
+                setTimeout(() => {
+                    this.isTransitioning = false;
+                }, 600);
+            }
+
+            startAutoplay() {
+                this.stopAutoplay();
+                this.intervalId = setInterval(() => {
+                    if (!this.isTransitioning) {
+                        this.next();
+                    }
+                }, this.autoplayDelay);
+            }
+
+            stopAutoplay() {
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+            }
+
+            bindEvents() {
+                this.carousel.addEventListener('mouseenter', () => this.stopAutoplay());
+                this.carousel.addEventListener('mouseleave', () => this.startAutoplay());
+
+                this.carousel.addEventListener('touchstart', (e) => {
+                    this.touchStartX = e.touches[0].clientX;
+                });
+
+                this.carousel.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const diffX = this.touchStartX - touchEndX;
+
+                    if (Math.abs(diffX) > 50) {
+                        if (diffX > 0) this.next();
+                        else this.prev();
+                    }
+                });
+
+                this.carousel.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') this.prev();
+                    if (e.key === 'ArrowRight') this.next();
+                });
+
+                this.carousel.setAttribute('tabindex', '0');
+            }
+
+            destroy() {
+                this.stopAutoplay();
+                this.carousel.removeEventListener('mouseenter', this.stopAutoplay);
+                this.carousel.removeEventListener('mouseleave', this.startAutoplay);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.carousel = new ImageCarousel('#carousel');
+        });
+    </script>
+</body>
+
+</html>
