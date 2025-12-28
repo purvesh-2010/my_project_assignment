@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purvesh's DarkStore Pro ✨</title>
+    <style>
+        :root {
+            --primary: linear-gradient(45deg, #00d4ff, #ff6b9d, #00ff88, #ffaa00);
+            --dark-bg: #0a0a1a;
+            --card-bg: rgba(20, 20, 50, 0.7);
+            --glow: 0 0 30px rgba(0, 212, 255, 0.6);
+            --neon-glow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(255, 107, 157, 0.6);
+            --particle-glow: rgba(0, 212, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--dark-bg);
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* PARTICLE BACKGROUND */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, var(--particle-glow) 20%, transparent);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        /* PRO NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(30px);
+            padding: 1rem 0;
+            z-index: 1000;
+            box-shadow: var(--neon-glow);
+            animation: navbarGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes navbarGlow {
+            0% {
+                box-shadow: var(--glow);
+            }
+
+            100% {
+                box-shadow: var(--neon-glow);
+            }
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: logoShimmer 2s linear infinite;
+        }
+
+        @keyframes logoShimmer {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-btn,
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid transparent;
+            border-radius: 50px;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before,
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover::before,
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            border-color: #00d4ff;
+            box-shadow: var(--neon-glow);
+            transform: translateY(-5px) scale(1.05);
+            animation: buttonPulse 1.5s infinite;
+        }
+
+        @keyframes buttonPulse {
+
+            0%,
+            100% {
+                box-shadow: var(--neon-glow);
+            }
+
+            50% {
+                box-shadow: 0 0 50px rgba(0, 212, 255, 1), 0 0 80px rgba(255, 107, 157, 0.8);
+            }
+        }
+
+        /* LOGIN STATUS */
+        .login-status {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(0, 212, 255, 0.2);
+            font-weight: 600;
+            animation: statusFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes statusFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .login-status.logged-in {
+            background: rgba(46, 204, 113, 0.4);
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+        }
+
+        /* LOGIN REQUIRED OVERLAY */
+        .login-required {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(25px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .login-required.active {
+            display: flex;
+            animation: modalSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalSlideIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotateX(-10deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateX(0);
+            }
+        }
+
+        .login-required h2 {
+            font-size: 3rem;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            animation: neonText 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.8));
+        }
+
+        @keyframes neonText {
+            0% {
+                filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.8));
+            }
+
+            100% {
+                filter: drop-shadow(0 0 30px rgba(255, 107, 157, 0.9));
+            }
+        }
+
+        /* MAIN LAYOUT */
+        .page {
+            min-height: 100vh;
+            padding-top: 90px;
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: pageSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes pageSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(0, 212, 255, 0.15), transparent);
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(0, 212, 255, 0.1) 50%, transparent 70%);
+            animation: heroShine 4s linear infinite;
+        }
+
+        @keyframes heroShine {
+            0% {
+                transform: translateX(-100%) skewX(-15deg);
+            }
+
+            100% {
+                transform: translateX(100%) skewX(-15deg);
+            }
+        }
+
+        .hero-content h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            animation: heroPulse 2.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.8));
+        }
+
+        @keyframes heroPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.8));
+            }
+
+            50% {
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 60px rgba(0, 212, 255, 1));
+            }
+        }
+
+        /* LOGIN FORM */
+        .login-section {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 3rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            border-radius: 25px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            box-shadow: var(--neon-glow);
+            animation: cardFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1.25rem;
+            background: rgba(10, 10, 30, 0.8);
+            border: 2px solid rgba(0, 212, 255, 0.4);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: var(--neon-glow);
+            background: rgba(0, 212, 255, 0.15);
+            transform: scale(1.02);
+        }
+
+        /* DISABLED BUTTONS */
+        .add-cart-btn:disabled {
+            background: rgba(255, 71, 87, 0.3) !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+            opacity: 0.7;
+            position: relative;
+            color: transparent;
+        }
+
+        .add-cart-btn:disabled::after {
+            content: "🔐 Login First";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            z-index: 10;
+        }
+
+        /* STORE */
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.4);
+            position: relative;
+        }
+
+        .store-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            animation: borderShine 3s linear infinite;
+        }
+
+        @keyframes borderShine {
+            0% {
+                width: 0;
+                left: 0;
+            }
+
+            50% {
+                width: 100%;
+            }
+
+            100% {
+                width: 0;
+                left: 100%;
+            }
+        }
+
+        .store-title {
+            font-size: 3.5rem;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleShimmer 3s linear infinite;
+        }
+
+        @keyframes titleShimmer {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 300% 50%;
+            }
+        }
+
+        .store-content {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary);
+            opacity: 0;
+            z-index: 1;
+            transition: opacity 0.4s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-20px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 40px 80px rgba(0, 212, 255, 0.4);
+            border-color: #00d4ff;
+        }
+
+        .product-card:hover::before {
+            opacity: 0.1;
+            animation: cardShimmer 2s linear infinite;
+        }
+
+        @keyframes cardShimmer {
+            0% {
+                transform: translateX(-100%) skewX(-20deg);
+            }
+
+            100% {
+                transform: translateX(120%) skewX(-20deg);
+            }
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: all 0.5s ease;
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        .product-card:hover .product-image {
+            filter: brightness(1.1) contrast(1.2);
+            transform: scale(1.05);
+        }
+
+        .product-body {
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: white;
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            0% {
+                text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            }
+
+            100% {
+                text-shadow: 0 0 20px rgba(255, 107, 157, 0.8);
+            }
+        }
+
+        .product-price {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.6));
+        }
+
+        .add-cart-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-cart-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .add-cart-btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .add-cart-btn:hover:not(:disabled) {
+            transform: scale(1.08) translateY(-3px);
+            box-shadow: 0 25px 50px rgba(0, 212, 255, 0.6);
+            animation: cartButtonPulse 1s infinite;
+        }
+
+        @keyframes cartButtonPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 25px 50px rgba(0, 212, 255, 0.6);
+            }
+
+            50% {
+                box-shadow: 0 25px 50px rgba(0, 212, 255, 1), 0 0 40px rgba(255, 107, 157, 0.8);
+            }
+        }
+
+        /* CART SIDEBAR */
+        .cart-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            height: fit-content;
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            position: sticky;
+            top: 120px;
+            animation: cartFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes cartFloat {
+
+            0%,
+            100% {
+                transform: translateX(0) rotate(1deg);
+            }
+
+            50% {
+                transform: translateX(5px) rotate(-1deg);
+            }
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            transform: scale(1.02);
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 0 -1rem;
+        }
+
+        .cart-remove {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #ff4757;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cart-remove::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s;
+            transform: translate(-50%, -50%);
+        }
+
+        .cart-remove:hover::before {
+            width: 60px;
+            height: 60px;
+        }
+
+        .cart-remove:hover {
+            background: #ff3742;
+            transform: scale(1.2) rotate(90deg);
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.6);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checkout-btn:hover:not(:disabled) {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 212, 255, 0.7);
+            animation: checkoutPulse 1.5s infinite;
+        }
+
+        @keyframes checkoutPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 30px 60px rgba(0, 212, 255, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 30px 60px rgba(0, 212, 255, 1), 0 0 50px rgba(255, 107, 157, 0.9);
+            }
+        }
+
+        /* CHECKOUT MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: modalZoomIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalZoomIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) rotateY(-20deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0);
+            }
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 550px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid rgba(0, 212, 255, 0.6);
+            position: relative;
+            box-shadow: var(--neon-glow);
+            animation: modalFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes modalFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) rotateX(0);
+            }
+
+            50% {
+                transform: translateY(-5px) rotateX(2deg);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            width: 45px;
+            height: 45px;
+            border: 2px solid #ff4757;
+            border-radius: 50%;
+            background: transparent;
+            color: #ff4757;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-close:hover {
+            background: #ff4757;
+            transform: rotate(360deg) scale(1.2);
+            box-shadow: 0 15px 40px rgba(255, 71, 87, 0.7);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .store-content {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-panel {
+                position: static;
+                margin-top: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+
+            .login-required h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- PARTICLE BACKGROUND -->
+    <div class="particles" id="particles"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">🛒 DarkStore Pro</div>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-page="hero">🏠 Home</button>
+                <button class="nav-btn" data-page="login">🔐 Login</button>
+                <button class="nav-btn" data-page="store" id="storeBtn">🛍️ Store</button>
+                <button class="nav-btn" id="cartBtn">🛒 Cart (<span id="cart-count">0</span>)</button>
+                <div class="login-status" id="loginStatus">Guest</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- LOGIN REQUIRED OVERLAY -->
+    <div id="loginRequired" class="login-required">
+        <h2>🔐 Login Required</h2>
+        <p>Please login to access store and add items to cart</p>
+        <button class="action-btn" style="padding: 1.5rem 3rem; font-size: 1.2rem;" data-page="login">
+            Go to Login ✨
+        </button>
+    </div>
+
+    <!-- HERO PAGE -->
+    <section id="hero" class="page active">
+        <div class="hero">
+            <div class="hero-content">
+                <h1>DarkStore Pro</h1>
+                <p style="font-size: 1.5rem; margin-bottom: 3rem; opacity: 0.9;">
+                    Premium gaming gear & tech warriors 🚀
+                </p>
+                <button class="action-btn" style="padding: 1.5rem 3rem; font-size: 1.3rem;" data-page="login">
+                    Start Shopping ✨
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOGIN PAGE -->
+    <section id="login" class="page">
+        <div class="container">
+            <div class="login-section">
+                <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 2rem;">
+                    Welcome Back
+                </h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <input type="email" id="loginEmail" placeholder="📧 purvesh@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="loginPassword" placeholder="🔒 Password" required>
+                    </div>
+                    <button type="submit" class="action-btn" style="width: 100%; padding: 1.25rem;">
+                        Enter Store 🚀
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- STORE PAGE -->
+    <section id="store" class="page">
+        <div class="container">
+            <div class="store-header">
+                <h1 class="store-title">Gaming Gear</h1>
+                <div>
+                    <input type="text" id="search" placeholder="🔍 Search products..."
+                        style="padding: 1rem 2rem; border-radius: 25px; border: 2px solid rgba(0,212,255,0.4); background: rgba(15,15,35,0.8); color: white; font-size: 1rem; transition: all 0.3s ease;">
+                </div>
+            </div>
+
+            <div class="store-content">
+                <div class="products-grid" id="productsGrid">
+                    <!-- Dynamic products -->
+                </div>
+                <div class="cart-panel">
+                    <h3 style="margin-bottom: 2rem; font-size: 1.5rem;">🛒 Shopping Cart</h3>
+                    <div id="cartItems">Please login to add items</div>
+                    <div style="margin-top: 2rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem;">
+                            <span>Total:</span>
+                            $<span id="totalPrice">0</span>
+                        </div>
+                        <button class="checkout-btn" id="checkoutBtn" disabled>Checkout Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHECKOUT MODAL -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">×</button>
+            <h2 style="text-align: center; margin-bottom: 2rem; font-size: 2rem;">Complete Order</h2>
+            <div id="modalCartItems" style="margin-bottom: 2rem;"></div>
+            <div style="font-size: 1.8rem; font-weight: 800; text-align: right; margin-bottom: 2rem; color: #00d4ff;">
+                Total: $<span id="modalTotal">0</span>
+            </div>
+            <form id="orderForm">
+                <div class="form-group">
+                    <input type="text" placeholder="👤 Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" placeholder="📱 Phone Number" required>
+                </div>
+                <button type="submit" class="action-btn" style="width: 100%; padding: 1.25rem; font-size: 1.2rem;">
+                    Place Order 🚀
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Create animated particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // PRODUCTS DATA - Gaming gear for BSC IT student
+        const products = [
+            { id: 1, name: "Specter Blue Light Glasses", price: 89, img: "https://images.unsplash.com/photo-1574267432552-b564ff5f1725?w=400&h=250&fit=crop", desc: "Anti-glare for coding marathons" },
+            { id: 2, name: "Quantum Pro Mouse", price: 129, img: "https://images.unsplash.com/photo-1610945262588-8f86891142e1?w=400&h=250&fit=crop", desc: "26K DPI gaming sensor" },
+            { id: 3, name: "Nebula RGB Keyboard", price: 199, img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop", desc: "Hot-swappable switches" },
+            { id: 4, name: "Astro Wireless Headset", price: 159, img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=250&fit=crop", desc: "Spatial audio 40hr battery" },
+            { id: 5, name: "Vortex Gaming Monitor", price: 349, img: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=400&h=250&fit=crop", desc: "144Hz 1ms IPS panel" },
+            { id: 6, name: "Phantom Mousepad", price: 39, img: "https://images.unsplash.com/photo-1587829741303-dc798b98a4b5?w=400&h=250&fit=crop", desc: "XL RGB speed surface" }
+        ];
+
+        let cart = [];
+        let isLoggedIn = false;
+        let currentUser = '';
+
+        // Check login status
+        function checkLoginStatus() {
+            return isLoggedIn;
+        }
+
+        // Show login required overlay
+        function showLoginRequired() {
+            document.getElementById('loginRequired').classList.add('active');
+        }
+
+        // Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-page="${pageId}"]`)?.classList.add('active');
+
+            if (pageId === 'store' && !checkLoginStatus()) {
+                showLoginRequired();
+                return;
+            }
+
+            if (pageId === 'store') {
+                renderProducts();
+                updateCart();
+            }
+        }
+
+        // Cart Management
+        function addToCart(productId) {
+            if (!checkLoginStatus()) {
+                showLoginRequired();
+                return;
+            }
+
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItemsEl = document.getElementById('cartItems');
+            const totalEl = document.getElementById('totalPrice');
+            const countEl = document.getElementById('cart-count');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            totalEl.textContent = total.toFixed(2);
+            countEl.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+            if (cart.length === 0 || !checkLoginStatus()) {
+                cartItemsEl.innerHTML = !checkLoginStatus() ?
+                    '<p style="text-align:center; color:#b0b0cc; font-size:1.2rem;">🔐 Please login to see cart</p>' :
+                    '<p style="text-align:center; color:#b0b0cc; font-size:1.2rem;">Your cart is empty</p>';
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            checkoutBtn.disabled = false;
+            cartItemsEl.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight:600; margin-bottom:0.5rem;">${item.name}</div>
+                        <div style="color:#b0b0cc; font-size:0.9rem;">$${item.price} × ${item.quantity}</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                        <div style="font-weight:700; color:#00d4ff; font-size:1.2rem;">
+                            $${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                        <button class="cart-remove" onclick="removeFromCart(${item.id})">×</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderProducts(filteredProducts = products) {
+            const isLoggedIn = checkLoginStatus();
+            document.getElementById('productsGrid').innerHTML = filteredProducts.map(product => `
+                <div class="product-card">
+                    <img src="${product.img}" alt="${product.name}" class="product-image">
+                    <div class="product-body">
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-price">$${product.price}</div>
+                        <p style="color:#b0b0cc; margin-bottom:1.5rem; line-height:1.6;">${product.desc}</p>
+                        <button class="add-cart-btn" ${!isLoggedIn ? 'disabled' : ''} onclick="addToCart(${product.id})">
+                            ${isLoggedIn ? 'Add to Cart ✨' : ''}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Search functionality
+        document.getElementById('search')?.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = products.filter(p =>
+                p.name.toLowerCase().includes(query) ||
+                p.desc.toLowerCase().includes(query)
+            );
+            renderProducts(filtered);
+        });
+
+        // Event Listeners
+        document.addEventListener('click', (e) => {
+            if (e.target.dataset.page) {
+                showPage(e.target.dataset.page);
+            }
+        });
+
+        // Login Form
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            currentUser = email.split('@')[0];
+            isLoggedIn = true;
+
+            document.getElementById('loginStatus').textContent = `Hi ${currentUser}!`;
+            document.getElementById('loginStatus').classList.add('logged-in');
+
+            alert('✅ Welcome ' + currentUser + '! Let\'s shop! 🚀');
+            document.getElementById('loginRequired').classList.remove('active');
+            showPage('store');
+        });
+
+        // Checkout
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            if (cart.length === 0 || !checkLoginStatus()) return;
+
+            document.getElementById('modalCartItems').innerHTML = document.getElementById('cartItems').innerHTML;
+            document.getElementById('modalTotal').textContent = document.getElementById('totalPrice').textContent;
+            document.getElementById('checkoutModal').classList.add('active');
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('checkoutModal').classList.remove('active');
+        });
+
+        document.getElementById('orderForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('🎉 Order placed successfully! Thanks ' + currentUser + '! ✨');
+            cart = [];
+            document.getElementById('checkoutModal').classList.remove('active');
+            updateCart();
+            renderProducts();
+        });
+
+        // Close overlays on outside click
+        document.getElementById('loginRequired').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                e.stopPropagation();
+            }
+        });
+
+        document.getElementById('checkoutModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                e.stopPropagation();
+            }
+        });
+
+        // Initialize
+        createParticles();
+        updateCart();
+        renderProducts();
+    </script>
+</body>
+
+</html>
